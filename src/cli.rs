@@ -1,8 +1,8 @@
 use crate::Result;
 
+use crate::index_v1::IndexV1;
 use crate::validate;
-use clap::{Parser, ArgAction};
-use crate::index_v1::Index_v1;
+use clap::{ArgAction, Parser};
 
 /// Get the necessary osm pbf files within a bounding box
 #[derive(Parser, Debug)]
@@ -13,20 +13,16 @@ pub struct Cli {
     pub bbox: String,
 
     /// Download the resulting osm.pbf files. Optional.
-    #[arg(
-        short,
-        long,
-        action(ArgAction::SetTrue),
-    )]
+    #[arg(short, long, action(ArgAction::SetTrue))]
     pub download: Option<String>,
 }
 
 pub fn run() -> Result<()> {
-    let mut args = Cli::parse();
-    validate::bbox(&mut args.bbox)?;
+    let args = Cli::parse();
+    validate::bbox(&args.bbox)?;
     if args.download.is_some() {
-        let index = Index_v1::new()?;
-        println!("{:?}", index);
+        let index = IndexV1::new()?;
+        let grand_parents = index.get_grandparents()?;
     }
 
     Ok(())

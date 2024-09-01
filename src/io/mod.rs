@@ -1,17 +1,14 @@
 use crate::Result;
-use geo_types::GeometryCollection;
-use geojson::{quick_collection, GeoJson};
-use reqwest;
+use geojson::{FeatureCollection, GeoJson};
 use std::fs::File;
 use std::io::copy;
-use std::io::prelude::*;
 use std::path::PathBuf;
 
 pub fn download(url: &str, file_path: &PathBuf) -> Result<()> {
     // Send an HTTP GET request to the URL
     let mut response = reqwest::blocking::get(url)?;
 
-    let mut dest = File::create(&file_path)?;
+    let mut dest = File::create(file_path)?;
 
     if cfg!(debug_assertions) {
         println!("Downloading index-v1.json");
@@ -23,13 +20,10 @@ pub fn download(url: &str, file_path: &PathBuf) -> Result<()> {
     Ok(())
 }
 
-pub fn read_geojson(file_path: &PathBuf) -> Result<GeometryCollection<f64>> {
-    let mut file = File::open(&file_path)?;
-    let mut file_contents = String::new();
-    let _ = file.read_to_string(&mut file_contents);
+pub fn read_geojson(file_path: &PathBuf) -> Result<FeatureCollection> {
+    let geojson_str = std::fs::read_to_string(file_path)?;
+    let geojson: GeoJson = geojson_str.parse::<GeoJson>().unwrap();
+    let feature_collection = FeatureCollection::try_from(geojson).unwrap();
 
-    let data = file_contents.parse::<GeoJson>()?;
-    let geometry_collection = quick_collection(&data)?;
-
-    Ok(geometry_collection)
+    Ok(feature_collection)
 }
