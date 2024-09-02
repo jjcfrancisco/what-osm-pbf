@@ -23,6 +23,21 @@ pub fn run() -> Result<()> {
     if args.download.is_some() {
         let index = IndexV1::new()?;
         let grand_parents = index.get_grandparents()?;
+        if grand_parents.is_some() {
+            for grand_parent in grand_parents.unwrap() {
+                println!("Grandparent: {}", grand_parent.name);
+                if grand_parent.parents.is_some() {
+                    for parent in grand_parent.parents.unwrap() {
+                        println!("Parent: {}", parent.name);
+                        if parent.children.is_some() {
+                            for child in parent.children.unwrap() {
+                                println!("Child: {}", child.name);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     Ok(())
