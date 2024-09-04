@@ -1,16 +1,18 @@
+use crate::index_v1::{parents, find_osm_pbf_link};
 use geojson::FeatureCollection;
-use crate::index_v1::parents;
 
 #[derive(Debug)]
 pub struct GrandParent {
     pub name: String,
     id: String,
+    pub link: String,
     pub parents: Option<Vec<parents::Parent>>,
-    geom: Option<geojson::Geometry>,
+    pub geom: geojson::Geometry,
 }
 
 pub fn get(data: &FeatureCollection) -> Option<Vec<GrandParent>> {
     let mut grand_parents: Vec<GrandParent> = Vec::new();
+    let empty_urls = serde_json::Map::new();
     data.features.iter().for_each(|feature| {
         // Get name or ignore
         let name = feature
@@ -23,6 +25,12 @@ pub fn get(data: &FeatureCollection) -> Option<Vec<GrandParent>> {
             .unwrap_or(&serde_json::Value::Null)
             .as_str()
             .unwrap_or("No id found");
+        let urls = feature
+            .property("urls")
+            .unwrap_or(&serde_json::Value::Null)
+            .as_object()
+            .unwrap_or(&empty_urls);
+        let link = find_osm_pbf_link(urls);
         if feature
             .property("parent")
             .unwrap_or(&serde_json::Value::Null)
@@ -31,8 +39,9 @@ pub fn get(data: &FeatureCollection) -> Option<Vec<GrandParent>> {
             grand_parents.push(GrandParent {
                 name: name.to_string(),
                 id: id.to_string(),
+                link: link.expect("No link found"),
                 parents: parents::get(data, id),
-                geom: feature.geometry.clone(),
+                geom: feature.geometry.clone().expect("No geometry found"),
             });
         }
     });

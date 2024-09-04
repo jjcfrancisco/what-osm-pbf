@@ -1,6 +1,6 @@
 use crate::index_v1::find_osm_pbf_link;
 use geojson::FeatureCollection;
-use crate::index_v1::grandchildren::GrandChild;
+use crate::index_v1::grandchildren;
 
 #[derive(Debug)]
 pub struct Child {
@@ -8,9 +8,9 @@ pub struct Child {
     id: String,
     iso31661alpha2: Option<String>,
     iso31662: Option<String>,
-    link: Option<String>,
-    grandchildren: Option<Vec<GrandChild>>,
-    geom: Option<geojson::Geometry>,
+    pub link: String,
+    pub grandchildren: Option<Vec<grandchildren::GrandChild>>,
+    pub geom: geojson::Geometry,
 }
 
 pub fn get(data: &FeatureCollection, parent_id: &str) -> Option<Vec<Child>> {
@@ -38,15 +38,17 @@ pub fn get(data: &FeatureCollection, parent_id: &str) -> Option<Vec<Child>> {
             .unwrap_or(&serde_json::Value::Null)
             == parent_id
         {
-            children.push(Child {
+            let mut child = Child {
                 name: name.to_string(),
                 id: id.to_string(),
                 iso31661alpha2: None,
                 iso31662: None,
-                link,
+                link: link.expect("No link found"),
                 grandchildren: None,
-                geom: feature.geometry.clone(),
-            });
+                geom: feature.geometry.clone().expect("No geometry found"),
+            };
+            child.grandchildren = grandchildren::get(data, &child.id);
+            children.push(child);
         }
     });
     if children.is_empty() {

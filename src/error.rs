@@ -6,6 +6,7 @@ pub type Result<T> = core::result::Result<T, Error>;
 pub enum Error {
     // -- Validate
     InvalidBbox,
+    InvalidLevel,
     // -- IndexV1
     NoGrandParents,
 

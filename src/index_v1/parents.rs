@@ -1,6 +1,6 @@
-use geojson::FeatureCollection;
-use crate::index_v1::find_osm_pbf_link;
 use crate::index_v1::children;
+use crate::index_v1::find_osm_pbf_link;
+use geojson::FeatureCollection;
 
 #[derive(Debug)]
 pub struct Parent {
@@ -8,9 +8,9 @@ pub struct Parent {
     id: String,
     iso31661alpha2: Option<String>,
     iso31662: Option<String>,
-    link: Option<String>,
+    pub link: String,
     pub children: Option<Vec<children::Child>>,
-    geom: Option<geojson::Geometry>,
+    pub geom: geojson::Geometry,
 }
 pub fn get(data: &FeatureCollection, grand_parent_id: &str) -> Option<Vec<Parent>> {
     let mut parents: Vec<Parent> = Vec::new();
@@ -58,9 +58,9 @@ pub fn get(data: &FeatureCollection, grand_parent_id: &str) -> Option<Vec<Parent
                     id: id.to_string(),
                     iso31661alpha2: None,
                     iso31662: None,
-                    link: link.clone(),
+                    link: link.clone().expect("No link found"),
                     children: None,
-                    geom: feature.geometry.clone(),
+                    geom: feature.geometry.clone().expect("No geometry found"),
                 };
                 if let Some(iso31661alpha2) = iso31661alpha2 {
                     parent.iso31661alpha2 = Some(iso31661alpha2.to_string());
@@ -75,9 +75,9 @@ pub fn get(data: &FeatureCollection, grand_parent_id: &str) -> Option<Vec<Parent
                     id: id.to_string(),
                     iso31661alpha2: None,
                     iso31662: None,
-                    link,
+                    link: link.expect("No link found"),
                     children: None,
-                    geom: feature.geometry.clone(),
+                    geom: feature.geometry.clone().expect("No geometry found"),
                 };
                 if iso31661alpha2.is_some() {
                     parent.iso31661alpha2 = Some(iso31661alpha2.unwrap().to_string())
@@ -94,4 +94,3 @@ pub fn get(data: &FeatureCollection, grand_parent_id: &str) -> Option<Vec<Parent
     }
     Some(parents)
 }
-

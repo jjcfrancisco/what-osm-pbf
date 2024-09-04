@@ -3,12 +3,12 @@ use geojson::FeatureCollection;
 
 #[derive(Debug)]
 pub struct GrandChild {
-    name: String,
+    pub name: String,
     id: String,
     iso31661alpha2: Option<String>,
     iso31662: Option<String>,
-    link: Option<String>,
-    geom: Option<geojson::Geometry>,
+    pub link: String,
+    pub geom: geojson::Geometry,
 }
 
 pub fn get(data: &FeatureCollection, child_id: &str) -> Option<Vec<GrandChild>> {
@@ -41,10 +41,13 @@ pub fn get(data: &FeatureCollection, child_id: &str) -> Option<Vec<GrandChild>> 
                 id: id.to_string(),
                 iso31661alpha2: None,
                 iso31662: None,
-                link,
-                geom: feature.geometry.clone(),
+                link: link.expect("No link found"),
+                geom: feature.geometry.clone().expect("No geometry found"),
             });
         }
     });
-    None
+    if grand_children.is_empty() {
+        return None;
+    }
+    Some(grand_children)
 }

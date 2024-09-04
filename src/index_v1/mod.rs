@@ -5,11 +5,11 @@ use serde_json::Map;
 use std::path::Path;
 use tempfile::tempdir;
 
-mod children;
-mod grandchildren;
-mod grandparents;
-mod islands;
-mod parents;
+pub mod children;
+pub mod grandchildren;
+pub mod grandparents;
+pub mod islands;
+pub mod parents;
 
 use grandparents::GrandParent;
 use islands::Island;
@@ -31,7 +31,7 @@ fn get_index_v1() -> Result<FeatureCollection> {
         .to_str()
         .unwrap();
 
-    let tmp_dir = tempdir()?;
+    let tmp_dir =tempdir()?;
     let tmp_full_path = tmp_dir.path().join(filename);
 
     if cfg!(debug_assertions) {
@@ -51,12 +51,19 @@ impl IndexV1 {
             islands: None,
         })
     }
-    pub fn get_grandparents(&self) -> Result<Option<Vec<GrandParent>>> {
+    pub fn get_grandparents(&self) -> Option<Vec<GrandParent>> {
         let grand_parents = grandparents::get(&self.geojson);
         if grand_parents.is_none() {
-            return Err(Error::NoGrandParents);
+            return None
         }
-        Ok(grand_parents)
+        grand_parents
+    }
+    pub fn get_islands(&self) -> Option<Vec<Island>> {
+        let islands = islands::get(&self.geojson);
+        if islands.is_none() {
+            return None
+        }
+        islands
     }
 }
 
@@ -68,6 +75,32 @@ fn find_osm_pbf_link(urls: &Map<String, serde_json::Value>) -> Option<String> {
     }
     None
 }
+
+// Only for debugging purposes
+fn display_list(grand_parents: Vec<GrandParent>, islands: Vec<Island>) {
+    for grand_parent in grand_parents {
+        println!("Grandparent: {}", grand_parent.name);
+        if grand_parent.parents.is_some() {
+            for parent in grand_parent.parents.unwrap() {
+                println!("Parent: {}", parent.name);
+                if parent.children.is_some() {
+                    for child in parent.children.unwrap() {
+                        println!("Child: {}", child.name);
+                        if child.grandchildren.is_some() {
+                            for grandchild in child.grandchildren.unwrap() {
+                                println!("Grandchild: {}", grandchild.name);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    for island in islands {
+        println!("Island: {}", island.name);
+    }
+}
+
 
 #[cfg(test)]
 mod tests {

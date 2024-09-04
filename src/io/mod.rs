@@ -3,6 +3,7 @@ use geojson::{FeatureCollection, GeoJson};
 use std::fs::File;
 use std::io::copy;
 use std::path::PathBuf;
+use reqwest;
 
 pub fn download(url: &str, file_path: &PathBuf) -> Result<()> {
     // Send an HTTP GET request to the URL
