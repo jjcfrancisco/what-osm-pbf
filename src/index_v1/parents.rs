@@ -3,6 +3,7 @@ use crate::index_v1::find_osm_pbf_link;
 use geojson::FeatureCollection;
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct Parent {
     pub name: String,
     id: String,
@@ -65,7 +66,7 @@ pub fn get(data: &FeatureCollection, grand_parent_id: &str) -> Option<Vec<Parent
                 if let Some(iso31661alpha2) = iso31661alpha2 {
                     parent.iso31661alpha2 = Some(iso31661alpha2.to_string());
                 }
-                parent.children = children::get(&data, id);
+                parent.children = children::get(data, id);
                 parents.push(parent);
             }
             // Russian territories are processed differently
@@ -84,7 +85,7 @@ pub fn get(data: &FeatureCollection, grand_parent_id: &str) -> Option<Vec<Parent
                 };
                 // Russia does not have children territories but
                 // here for consistency and future proofing
-                parent.children = children::get(&data, id);
+                parent.children = children::get(data, id);
                 parents.push(parent);
             }
         }

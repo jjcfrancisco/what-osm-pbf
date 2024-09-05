@@ -2,6 +2,7 @@ use crate::index_v1::find_osm_pbf_link;
 use geojson::FeatureCollection;
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct Island {
     pub name: String,
     id: String,

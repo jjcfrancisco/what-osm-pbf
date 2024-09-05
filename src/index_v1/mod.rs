@@ -1,5 +1,5 @@
 use crate::io::{download, read_geojson};
-use crate::{Error, Result};
+use crate::Result;
 use geojson::FeatureCollection;
 use serde_json::Map;
 use std::path::Path;
@@ -19,8 +19,6 @@ const URL: &str = "https://download.geofabrik.de/index-v1.json";
 #[derive(Debug)]
 pub struct IndexV1 {
     geojson: FeatureCollection,
-    pub grand_parents: Option<Vec<GrandParent>>,
-    pub islands: Option<Vec<Island>>,
 }
 
 fn get_index_v1() -> Result<FeatureCollection> {
@@ -31,7 +29,7 @@ fn get_index_v1() -> Result<FeatureCollection> {
         .to_str()
         .unwrap();
 
-    let tmp_dir =tempdir()?;
+    let tmp_dir = tempdir()?;
     let tmp_full_path = tmp_dir.path().join(filename);
 
     if cfg!(debug_assertions) {
@@ -45,25 +43,16 @@ fn get_index_v1() -> Result<FeatureCollection> {
 impl IndexV1 {
     pub fn new() -> Result<Self> {
         let index_v1 = get_index_v1()?;
-        Ok(Self {
-            geojson: index_v1,
-            grand_parents: None,
-            islands: None,
-        })
+        Ok(Self { geojson: index_v1 })
     }
     pub fn get_grandparents(&self) -> Option<Vec<GrandParent>> {
-        let grand_parents = grandparents::get(&self.geojson);
-        if grand_parents.is_none() {
-            return None
-        }
-        grand_parents
+        let grand_parents = grandparents::get(&self.geojson)?;
+        Some(grand_parents)
     }
+
     pub fn get_islands(&self) -> Option<Vec<Island>> {
-        let islands = islands::get(&self.geojson);
-        if islands.is_none() {
-            return None
-        }
-        islands
+        let islands = islands::get(&self.geojson)?;
+        Some(islands)
     }
 }
 
@@ -77,6 +66,7 @@ fn find_osm_pbf_link(urls: &Map<String, serde_json::Value>) -> Option<String> {
 }
 
 // Only for debugging purposes
+#[allow(dead_code)]
 fn display_list(grand_parents: Vec<GrandParent>, islands: Vec<Island>) {
     for grand_parent in grand_parents {
         println!("Grandparent: {}", grand_parent.name);
@@ -100,7 +90,6 @@ fn display_list(grand_parents: Vec<GrandParent>, islands: Vec<Island>) {
         println!("Island: {}", island.name);
     }
 }
-
 
 #[cfg(test)]
 mod tests {

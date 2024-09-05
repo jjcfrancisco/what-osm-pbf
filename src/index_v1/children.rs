@@ -3,6 +3,7 @@ use geojson::FeatureCollection;
 use crate::index_v1::grandchildren;
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct Child {
     pub name: String,
     id: String,

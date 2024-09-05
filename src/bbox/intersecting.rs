@@ -106,7 +106,7 @@ pub fn get_all(
     let mut osmpbfs = OsmPbf::new();
     let mut does_intersect: bool;
     for grand_parent in grand_parents.unwrap() {
-        does_intersect = grand_parent.intersect(&validated_bbox);
+        does_intersect = grand_parent.intersect(validated_bbox);
 
         ////// Grandparent
         if does_intersect && args.level == 3 {
@@ -115,7 +115,7 @@ pub fn get_all(
         } else if does_intersect && args.level < 3 && grand_parent.parents.is_some() {
             // Example: user wants level=2 or lower and there are parents
             for parent in grand_parent.parents.unwrap() {
-                does_intersect = parent.intersect(&validated_bbox);
+                does_intersect = parent.intersect(validated_bbox);
 
                 ////// Parent
                 if does_intersect && args.level == 2 {
@@ -124,7 +124,7 @@ pub fn get_all(
                 } else if does_intersect && args.level < 2 && parent.children.is_some() {
                     // Example: user wants level=1 or lower and there are children
                     for child in parent.children.unwrap() {
-                        does_intersect = child.intersect(&validated_bbox);
+                        does_intersect = child.intersect(validated_bbox);
 
                         ////// Child
                         if does_intersect && args.level == 1 {
@@ -135,7 +135,7 @@ pub fn get_all(
                             // Example: user wants level=0 or lower and there are grandchildren
                             for grandchild in child.grandchildren.unwrap() {
                                 ////// Grandchild
-                                does_intersect = grandchild.intersect(&validated_bbox);
+                                does_intersect = grandchild.intersect(validated_bbox);
                                 if does_intersect && args.level == 0 {
                                     // Example: user wants level=0 only
                                     osmpbfs.add(grandchild.name, grandchild.link);
@@ -159,7 +159,7 @@ pub fn get_all(
     }
     // Islands
     for island in islands.unwrap() {
-        does_intersect = island.intersect(&validated_bbox);
+        does_intersect = island.intersect(validated_bbox);
         if does_intersect {
             osmpbfs.add(island.name, island.link);
         }

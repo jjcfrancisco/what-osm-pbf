@@ -2,6 +2,7 @@ use crate::index_v1::{parents, find_osm_pbf_link};
 use geojson::FeatureCollection;
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct GrandParent {
     pub name: String,
     id: String,

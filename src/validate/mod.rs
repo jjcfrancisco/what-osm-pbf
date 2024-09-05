@@ -26,7 +26,7 @@ pub fn bbox(bbox: &str) -> Result<Polygon> {
 pub fn level(level: &usize) -> Result<usize> {
     // must be between 0 and 3
     if *level > 3 {
-        return Err(Error::InvalidLevel);
+        Err(Error::InvalidLevel)
     } else {
         Ok(*level)
     }

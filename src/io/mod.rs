@@ -1,12 +1,10 @@
 use crate::bbox::intersecting::OsmPbf;
 use crate::Result;
+
 use geojson::{FeatureCollection, GeoJson};
-use reqwest;
-use std::env::current_dir;
 use std::fs::File;
 use std::io::copy;
 use std::path::PathBuf;
-use serde_json;
 use std::io::Write;
 
 pub fn download(url: &str, file_path: &PathBuf) -> Result<()> {
@@ -67,4 +65,45 @@ pub fn to_json(osmpbfs: &Vec<OsmPbf>) -> Result<()> {
     println!("File saved to: {:?}", file_path);
 
     Ok(())
+}
+
+#[cfg(test)]
+
+mod tests {
+    use super::*;
+    use tempfile::tempdir;
+
+    #[test]
+    fn test_download() {
+        let url = "https://download.geofabrik.de/index-v1.json";
+        let tmp_dir = tempdir().unwrap();
+        let tmp_full_path = tmp_dir.path().join("index-v1.json");
+        download(url, &tmp_full_path).unwrap();
+        assert_eq!(tmp_full_path.exists(), true);
+    }
+
+    #[test]
+    fn test_read_geojson() {
+        let url = "https://download.geofabrik.de/index-v1.json";
+        let tmp_dir = tempdir().unwrap();
+        let tmp_full_path = tmp_dir.path().join("index-v1.json");
+        download(url, &tmp_full_path).unwrap();
+        let geojson = read_geojson(&tmp_full_path).unwrap();
+        assert_eq!(geojson.features.is_empty(), false);
+    }
+
+    #[test]
+    fn test_to_json() {
+        let osmpbfs = vec![
+            OsmPbf {
+                name: "Africa".to_string(),
+                link: "https://download.geofabrik.de/africa-latest.osm.pbf".to_string(),
+            },
+            OsmPbf {
+                name: "Antarctica".to_string(),
+                link: "https://download.geofabrik.de/antarctica-latest.osm.pbf".to_string(),
+            },
+        ];
+        to_json(&osmpbfs).unwrap();
+    }
 }

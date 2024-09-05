@@ -4,7 +4,7 @@ use crate::io::to_json;
 use crate::validate;
 use crate::Result;
 
-use clap::{ArgAction, Parser};
+use clap::Parser;
 
 /// Get the necessary osm pbf files within a bounding box
 #[derive(Parser, Debug)]
