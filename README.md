@@ -1,4 +1,4 @@
-# what-osm-pbf
+# what-osm-pbf [WOP]
 Get the necessary `osm.pbf` files within a bounding box.
 
 ## Installation

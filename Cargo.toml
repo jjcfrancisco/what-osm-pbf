@@ -16,3 +16,5 @@ geo = "0.28.0"
 [[bin]]
 name = "wop"
 path = "src/main.rs"
+
+categories = ["science::geo"]
