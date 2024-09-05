@@ -14,7 +14,7 @@ pub fn download(url: &str, file_path: &PathBuf) -> Result<()> {
     let mut dest = File::create(file_path)?;
 
     if cfg!(debug_assertions) {
-        println!("Downloading index-v1.json");
+        println!("Downloading file: {:?}", file_path);
     }
 
     // Copy the contents of the response to the file
@@ -45,15 +45,11 @@ pub fn to_json(osmpbfs: &Vec<OsmPbf>) -> Result<()> {
 
     let osmpbfs_json = serde_json::json!(osmpbfs_json);
 
-    if cfg!(debug_assertions) {
-        println!("{}", serde_json::to_string_pretty(&osmpbfs_json)?);
-    }
-
     // Get the current working directory
     let current_dir = std::env::current_dir()?;
 
     // Define the output file path
-    let file_path = current_dir.join("osmpbfs.json");
+    let file_path = current_dir.join("what-osm-pbf.json");
 
     // Create and write to the file
     let mut file = File::create(&file_path)?;
@@ -61,8 +57,6 @@ pub fn to_json(osmpbfs: &Vec<OsmPbf>) -> Result<()> {
 
     // Optionally, flush the file to ensure it's written
     file.flush()?;
-
-    println!("File saved to: {:?}", file_path);
 
     Ok(())
 }
