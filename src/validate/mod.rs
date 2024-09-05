@@ -45,7 +45,7 @@ mod tests {
 
     #[test]
     fn test_level() {
-        let level = level(3).unwrap();
+        let level = level(&3).unwrap();
         assert_eq!(level, 3);
     }
 }

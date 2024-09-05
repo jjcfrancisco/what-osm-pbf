@@ -1,5 +1,6 @@
 use crate::bbox;
 use crate::index_v1::IndexV1;
+use crate::io::to_json;
 use crate::validate;
 use crate::Result;
 
@@ -17,8 +18,8 @@ pub struct Cli {
     pub level: usize,
 
     /// Download the resulting osm.pbf files. Optional.
-    #[arg(short, long, action(ArgAction::SetTrue))]
-    pub download: Option<String>,
+    #[arg(short, long, default_value = "false")]
+    pub download: String,
 }
 
 pub fn run() -> Result<()> {
@@ -30,9 +31,15 @@ pub fn run() -> Result<()> {
     let grand_parents = index.get_grandparents();
     #[allow(unused_variables)]
     let islands = index.get_islands();
-    let osmpbfs = bbox::get_intersecting(grand_parents, islands, &validated_bbox, &args);
-    for osmpbf in osmpbfs {
+    let osmpbfs = bbox::intersecting::get_all(grand_parents, islands, &validated_bbox, &args);
+    for osmpbf in &osmpbfs {
         println!("Name: {:?}, Link: {:?}", osmpbf.name, osmpbf.link);
+    }
+
+    if args.download == "true" {
+        // Download the osm.pbf files
+    } else {
+        to_json(&osmpbfs)?;
     }
 
     Ok(())
