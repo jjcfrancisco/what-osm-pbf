@@ -2,6 +2,11 @@
 name = "what-osm-pbf"
 version = "0.1.0"
 edition = "2021"
+license = "MIT OR Apache-2.0"
+homepage = "http://jjcfrancis.co"
+readme = "README.md"
+repository = "https://github.com/jjcfrancisco/what-osm-pbf"
+description = "Get the necessary osm pbf files within a bounding box."
 
 [dependencies]
 derive_more = { version = "1", features = ["from"] }
@@ -18,3 +23,4 @@ name = "wop"
 path = "src/main.rs"
 
 categories = ["science::geo"]
+
