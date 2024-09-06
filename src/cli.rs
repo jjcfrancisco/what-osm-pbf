@@ -4,7 +4,7 @@ use crate::io::to_json;
 use crate::validate;
 use crate::Result;
 
-use clap::Parser;
+use clap::{ArgAction, Parser};
 
 /// Get the necessary osm pbf files within a bounding box
 #[derive(Parser, Debug)]
@@ -19,11 +19,11 @@ pub struct Cli {
     pub level: usize,
 
     /// Save output to JSON. Optional.
-    #[arg(short, long, default_value = "false")]
+    #[arg(short, long, action(ArgAction::SetTrue), default_value = "false")]
     pub savejson: String,
 
     /// Download the resulting osm.pbf files. Optional.
-    #[arg(short, long, default_value = "false")]
+    #[arg(short, long, action(ArgAction::SetTrue), default_value = "false")]
     pub download: String,
 }
 
