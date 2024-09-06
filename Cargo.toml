@@ -7,6 +7,7 @@ homepage = "http://jjcfrancis.co"
 readme = "README.md"
 repository = "https://github.com/jjcfrancisco/what-osm-pbf"
 description = "Get the necessary osm pbf files within a bounding box."
+categories = ["science::geo"]
 
 [dependencies]
 derive_more = { version = "1", features = ["from"] }
@@ -21,6 +22,4 @@ geo = "0.28.0"
 [[bin]]
 name = "wop"
 path = "src/main.rs"
-
-categories = ["science::geo"]
 
